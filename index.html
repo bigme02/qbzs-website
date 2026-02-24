@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二轮情报文章AI总结</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>二轮情报文章AI总结</h1>
+            <p class="subtitle">智能总结历史文章，快速回顾重点内容</p>
+        </header>
+
+        <div class="summary-section">
+            <div class="summary-header">
+                <h2>今日AI总结</h2>
+                <div class="summary-controls">
+                    <div class="category-tabs">
+                        <button class="tab-btn active" data-category="category1">燃油车</button>
+                        <button class="tab-btn" data-category="category2">电动车</button>
+                    </div>
+                    <div class="date-filter">
+                        <label for="dateRange">查看过去</label>
+                        <select id="dateRange">
+                            <option value="1">1天</option>
+                            <option value="2">2天</option>
+                            <option value="3">3天</option>
+                            <option value="4">4天</option>
+                            <option value="5">5天</option>
+                            <option value="6">6天</option>
+                            <option value="7">7天</option>
+                        </select>
+                        <span>的总结</span>
+                    </div>
+                </div>
+            </div>
+            <div id="todaySummary" class="summary-content">
+                <p>加载中...</p>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <div class="history-header">
+                <h2>历史文章</h2>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜索文章标题或内容...">
+                    <button id="searchBtn">搜索</button>
+                </div>
+            </div>
+            <div id="articleList" class="article-list">
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
