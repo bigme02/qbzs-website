@@ -34,6 +34,32 @@ async function callDataAPI(category, dateNum) {
     }
 }
 
+async function callSearchAPI(key) {
+    try {
+        const response = await fetch('/api/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                key: key
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`搜索API请求失败 (${response.status}):`, errorText);
+            throw new Error(`搜索API请求失败: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('搜索API调用错误:', error);
+        throw error;
+    }
+}
+
 async function fetchAllData(dateNum) {
     try {
         console.log('=== 开始获取数据 ===');
@@ -144,6 +170,33 @@ async function loadArticles() {
     console.log('=== loadArticles 被调用 ===');
     const articleList = document.getElementById('articleList');
     
+    if (currentSearchTerm) {
+        articleList.innerHTML = '<div class="loading">正在搜索...</div>';
+        
+        try {
+            const searchData = await callSearchAPI(currentSearchTerm);
+            const searchParsed = parseDataField(searchData.data);
+            
+            console.log('搜索结果:', searchParsed);
+            
+            if (searchParsed?.news_list && Array.isArray(searchParsed.news_list)) {
+                const searchArticles = searchParsed.news_list.map(article => ({
+                    ...article,
+                    category: 'search',
+                    categoryName: '搜索结果'
+                }));
+                
+                renderArticles(searchArticles);
+            } else {
+                articleList.innerHTML = '<div class="no-results">没有找到匹配的文章</div>';
+            }
+        } catch (error) {
+            console.error('搜索失败:', error);
+            articleList.innerHTML = '<div class="no-results">搜索失败，请稍后重试</div>';
+        }
+        return;
+    }
+    
     if (!apiData.category1 || !apiData.category2) {
         articleList.innerHTML = '<div class="loading">正在加载文章列表...</div>';
         return;
@@ -181,14 +234,12 @@ async function loadArticles() {
         allArticles = allArticles.filter(article => article.category === currentCategory);
     }
 
-    if (currentSearchTerm) {
-        const searchTerm = currentSearchTerm.toLowerCase();
-        allArticles = allArticles.filter(article => 
-            (article.title && article.title.toLowerCase().includes(searchTerm)) ||
-            (article.summary && article.summary.toLowerCase().includes(searchTerm))
-        );
-    }
+    renderArticles(allArticles);
+}
 
+function renderArticles(allArticles) {
+    const articleList = document.getElementById('articleList');
+    
     console.log('allArticles.length:', allArticles.length);
 
     if (allArticles.length === 0) {
