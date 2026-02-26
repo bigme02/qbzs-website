@@ -2,6 +2,7 @@ let currentCategory = 'all';
 let currentSearchTerm = '';
 let currentDateRange = 1;
 let currentSummaryCategory = 'category1';
+let currentDisplayedArticles = [];
 let apiData = {
     category1: null,
     category2: null
@@ -240,6 +241,8 @@ async function loadArticles() {
 function renderArticles(allArticles) {
     const articleList = document.getElementById('articleList');
     
+    currentDisplayedArticles = allArticles;
+    
     console.log('allArticles.length:', allArticles.length);
 
     if (allArticles.length === 0) {
@@ -301,44 +304,7 @@ function toggleSummary(index) {
 }
 
 function getArticleByIndex(index) {
-    const category1Parsed = parseDataField(apiData.category1.data);
-    const category2Parsed = parseDataField(apiData.category2.data);
-    
-    let allArticles = [];
-    
-    if (category1Parsed?.news_list && Array.isArray(category1Parsed.news_list)) {
-        category1Parsed.news_list.forEach(article => {
-            allArticles.push({
-                ...article,
-                category: 'category1',
-                categoryName: '燃油车'
-            });
-        });
-    }
-    
-    if (category2Parsed?.news_list && Array.isArray(category2Parsed.news_list)) {
-        category2Parsed.news_list.forEach(article => {
-            allArticles.push({
-                ...article,
-                category: 'category2',
-                categoryName: '电动车'
-            });
-        });
-    }
-    
-    if (currentCategory !== 'all') {
-        allArticles = allArticles.filter(article => article.category === currentCategory);
-    }
-    
-    if (currentSearchTerm) {
-        const searchTerm = currentSearchTerm.toLowerCase();
-        allArticles = allArticles.filter(article => 
-            (article.title && article.title.toLowerCase().includes(searchTerm)) ||
-            (article.summary && article.summary.toLowerCase().includes(searchTerm))
-        );
-    }
-    
-    return allArticles[index];
+    return currentDisplayedArticles[index];
 }
 
 async function refreshData() {
